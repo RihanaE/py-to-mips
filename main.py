@@ -1,6 +1,6 @@
 from tkinter import *
-from tkinter import filedialog
-from tkinter import font
+from tkinter import filedialog, font
+
 from compiler import Compiler
 
 
@@ -25,7 +25,9 @@ class Application(Tk):
         self.save1 = Button(
             nav, text="save", command=lambda: self.save_file("python"))
         self.save1.pack(side=LEFT)
+        self.convert = Button(nav, text="convert", command=self.convert_to_mips)
 
+        self.convert.pack(side=LEFT)
         self.save2 = Button(
             nav, text="save", command=lambda: self.save_file("mips"))
         self.save2.pack(side=RIGHT)
@@ -88,7 +90,7 @@ class Application(Tk):
         # Create Menu
         python_menu = Menu(self.python_frame)
         self.config(menu=python_menu)
-
+        
         # Add File Menu
         python_menu.add_command(label='Open', command=self.open_file)
         python_menu.add_command(label='New', command=self.new_file)

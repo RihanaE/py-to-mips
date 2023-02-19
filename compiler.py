@@ -1,5 +1,6 @@
+from typing import Dict, List
+
 from py_parser import *
-from typing import List, Dict
 
 
 class TemporaryMarker:
@@ -163,6 +164,12 @@ class Block:
                     return f"lw $t0, {value}\nsw $t0, {dest}\n"
 
         elif len(exp) == 2:
+            if exp[0] == "-":
+                value = int("".join(map(str, exp)))
+                if dest not in self.data_segment:
+                    self.data_segment[dest] = value
+                return f"li $t0, {value}\nsw $t0, {dest}\n"
+
             preamble = ""
             arg = exp[1]
             print_ = f"print({arg})"
@@ -206,18 +213,14 @@ class Block:
         end_loop = f"end_loop_{self.var_counter['loop']}"
 
         before = f"""
-
 {self.assign([start], loop_variable)}
 {load_start}
 {load_end}
 {load_step}
-
 loop_{self.var_counter['loop']}:
-
 blt $t9, $zero, decreasing_{self.var_counter['loop']}
 bge $t7, $t8, {end_loop}
 j end_guard_{self.var_counter['loop']}
-
 decreasing_{self.var_counter['loop']}:
 ble $t7, $t8, {end_loop}
 end_guard_{self.var_counter['loop']}:
@@ -367,7 +370,7 @@ j loop_{self.var_counter['loop']}
             elif length == 4:
                 start = tokens[4]
                 end = tokens[5]
-                step = int("".join(tokens[6:]))
+                step = int("".join(map(str, tokens[6:])))
 
             return self.for_loop(start, end, step, loop_variable)
 
